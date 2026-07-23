@@ -19,7 +19,10 @@ import {
   ChevronUp,
   Bookmark,
   Menu,
-  X
+  X,
+  Flame,
+  Rocket,
+  BarChart3
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoImg from '../assets/logo.png';
@@ -187,30 +190,42 @@ export const Landing = () => {
               <a 
                 href="#why-us" 
                 onClick={() => setIsMobileMenuOpen(false)} 
-                className="font-heading font-black text-base text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000]"
+                className="font-heading font-black text-xs sm:text-sm uppercase tracking-wider text-slate-800 border-2 border-slate-800 p-3 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50 transition-all cursor-pointer"
               >
-                🔥 WHY GLOBIVA
+                <div className="p-2 bg-brand-red-light border-2 border-slate-800 rounded-lg text-brand-red shadow-[2px_2px_0px_#000] shrink-0">
+                  <Flame size={16} />
+                </div>
+                <span>WHY GLOBIVA</span>
               </a>
               <a 
                 href="#journey" 
                 onClick={() => setIsMobileMenuOpen(false)} 
-                className="font-heading font-black text-base text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000]"
+                className="font-heading font-black text-xs sm:text-sm uppercase tracking-wider text-slate-800 border-2 border-slate-800 p-3 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50 transition-all cursor-pointer"
               >
-                🚀 OUR JOURNEY
+                <div className="p-2 bg-brand-red-light border-2 border-slate-800 rounded-lg text-brand-red shadow-[2px_2px_0px_#000] shrink-0">
+                  <Rocket size={16} />
+                </div>
+                <span>OUR JOURNEY</span>
               </a>
               <a 
                 href="#metrics" 
                 onClick={() => setIsMobileMenuOpen(false)} 
-                className="font-heading font-black text-base text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000]"
+                className="font-heading font-black text-xs sm:text-sm uppercase tracking-wider text-slate-800 border-2 border-slate-800 p-3 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50 transition-all cursor-pointer"
               >
-                📈 METRICS & SLAs
+                <div className="p-2 bg-brand-red-light border-2 border-slate-800 rounded-lg text-brand-red shadow-[2px_2px_0px_#000] shrink-0">
+                  <BarChart3 size={16} />
+                </div>
+                <span>METRICS & SLAs</span>
               </a>
               <a 
                 href="#faq" 
                 onClick={() => setIsMobileMenuOpen(false)} 
-                className="font-heading font-black text-base text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000]"
+                className="font-heading font-black text-xs sm:text-sm uppercase tracking-wider text-slate-800 border-2 border-slate-800 p-3 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50 transition-all cursor-pointer"
               >
-                ❓ GUIDELINES FAQ
+                <div className="p-2 bg-brand-red-light border-2 border-slate-800 rounded-lg text-brand-red shadow-[2px_2px_0px_#000] shrink-0">
+                  <HelpCircle size={16} />
+                </div>
+                <span>GUIDELINES FAQ</span>
               </a>
 
               <div className="border-t-2 border-dashed border-slate-300 pt-5 flex flex-col gap-3 mt-auto">
