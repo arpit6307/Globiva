@@ -35,6 +35,7 @@ export const Employees = () => {
   // Form states
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [customAgentId, setCustomAgentId] = useState('');
   const [department, setDepartment] = useState('Customer Support');
   const [editingEmployee, setEditingEmployee] = useState(null);
   
@@ -79,7 +80,7 @@ export const Employees = () => {
     setSuccess('');
     setProcessing(true);
 
-    const employeeId = generateEmployeeId();
+    const employeeId = customAgentId.trim() ? customAgentId.trim().toUpperCase() : generateEmployeeId();
     const tempPassword = `Globiva@${Math.floor(100 + Math.random() * 900)}`; // e.g. Globiva@582
 
     try {
@@ -106,9 +107,10 @@ export const Employees = () => {
 
       await setDoc(doc(db, 'users', newUid), employeeData);
       
-      setSuccess(`Employee added! ID: ${employeeId} | Temp Password: ${tempPassword}`);
+      setSuccess(`Agent added! ID: ${employeeId} | Temp Password: ${tempPassword}`);
       setName('');
       setEmail('');
+      setCustomAgentId('');
       setDepartment('Customer Support');
       setIsAddModalOpen(false);
       fetchEmployees();
@@ -129,13 +131,16 @@ export const Employees = () => {
 
     try {
       const userRef = doc(db, 'users', editingEmployee.id);
+      const updatedId = customAgentId.trim() ? customAgentId.trim().toUpperCase() : editingEmployee.employeeId;
       await updateDoc(userRef, {
         name: name.trim(),
+        employeeId: updatedId,
         department
       });
 
-      setSuccess(`Updated details for employee ${editingEmployee.employeeId}`);
+      setSuccess(`Updated details for Agent ID: ${updatedId}`);
       setName('');
+      setCustomAgentId('');
       setDepartment('Customer Support');
       setIsEditModalOpen(false);
       setEditingEmployee(null);
@@ -289,6 +294,7 @@ export const Employees = () => {
                             setSuccess('');
                             setEditingEmployee(emp);
                             setName(emp.name);
+                            setCustomAgentId(emp.employeeId || '');
                             setDepartment(emp.department);
                             setIsEditModalOpen(true);
                           }}
@@ -339,6 +345,19 @@ export const Employees = () => {
               </div>
 
               <form onSubmit={handleAddEmployee} class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1">
+                  <label class="font-heading font-bold text-xs uppercase tracking-wider text-slate-700">
+                    Agent ID / Employee Code (Manual or Auto)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. AGENT-101 or GLB8900 (Auto-generates if blank)"
+                    class="bg-white border-3 border-slate-800 rounded-xl p-3 focus:outline-none focus:ring-4 focus:ring-brand-red-light focus:bg-white font-body font-bold text-slate-800 transition-all shadow-[2px_2px_0px_#000] placeholder-gray-400 text-sm w-full font-mono uppercase"
+                    value={customAgentId}
+                    onChange={(e) => setCustomAgentId(e.target.value)}
+                  />
+                </div>
+
                 <div class="flex flex-col gap-1">
                   <label class="font-heading font-bold text-xs uppercase tracking-wider text-slate-700">Full Name</label>
                   <input
@@ -407,9 +426,22 @@ export const Employees = () => {
               </div>
 
               <form onSubmit={handleEditEmployee} class="flex flex-col gap-4">
-                <div class="flex flex-col gap-1 bg-gray-50 border-2 border-dashed border-slate-800/30 rounded-xl p-3 mb-2">
-                  <span class="text-xs text-gray-500 font-mono">Employee ID: <strong class="text-slate-800">{editingEmployee?.employeeId}</strong></span>
+                <div class="flex flex-col gap-1 bg-gray-50 border-2 border-dashed border-slate-800/30 rounded-xl p-3 mb-1">
                   <span class="text-xs text-gray-500 font-mono">Email (Locked): <strong class="text-slate-800">{editingEmployee?.email}</strong></span>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <label class="font-heading font-bold text-xs uppercase tracking-wider text-slate-700">
+                    Agent ID / Employee Code
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. AGENT-101 or GLB8900"
+                    class="bg-white border-3 border-slate-800 rounded-xl p-3 focus:outline-none focus:ring-4 focus:ring-brand-red-light focus:bg-white font-body font-bold text-slate-800 transition-all shadow-[2px_2px_0px_#000] placeholder-gray-400 text-sm w-full font-mono uppercase"
+                    value={customAgentId}
+                    onChange={(e) => setCustomAgentId(e.target.value)}
+                  />
                 </div>
 
                 <div class="flex flex-col gap-1">

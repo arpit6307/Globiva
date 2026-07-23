@@ -12,8 +12,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  KeyRound,
-  Sliders
+  KeyRound
 } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 
@@ -76,25 +75,24 @@ export const Sidebar = () => {
     const collapsed = isMobileLayout ? false : isCollapsed;
     
     return (
-      <div className="h-full flex flex-col justify-between bg-paper-white p-5 border-r-3 border-slate-800 select-none relative transition-all duration-200">
+      <div className="h-full flex flex-col justify-between bg-paper-white p-5 border-r-3 border-slate-800 select-none relative transition-all duration-200 overflow-y-auto custom-scrollbar">
         
-        {/* Floating Edge Slider Handle */}
+        {/* Collapse toggle tab */}
         {!isMobileLayout && (
           <button
             onClick={toggleCollapse}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="absolute top-1/2 -right-4 transform -translate-y-1/2 w-8 h-14 border-3 border-slate-800 bg-brand-red text-white rounded-r-xl flex items-center justify-center shadow-[3px_3px_0px_#000] z-40 transition-all hover:scale-105 active:scale-95 cursor-pointer group"
-            title={collapsed ? "Slide open sidebar" : "Slide close sidebar"}
+            className="absolute top-1/2 right-[-15px] transform -translate-y-1/2 w-4.5 h-12 border-y-3 border-r-3 border-slate-800 bg-white hover:bg-gray-150 rounded-r-md flex items-center justify-center shadow-brutal-sm z-30 transition-all hover:right-[-17px] group cursor-pointer"
           >
             {collapsed ? (
-              <ChevronRight size={18} strokeWidth={3} className="text-white group-hover:scale-125 transition-transform" />
+              <ChevronRight size={12} strokeWidth={4} className="text-slate-850 group-hover:scale-110 duration-150" />
             ) : (
-              <ChevronLeft size={18} strokeWidth={3} className="text-white group-hover:scale-125 transition-transform" />
+              <ChevronLeft size={12} strokeWidth={4} className="text-slate-600 group-hover:text-slate-800 group-hover:scale-110 duration-150" />
             )}
           </button>
         )}
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
           
           {/* Header Logo Card */}
           <div className={`flex items-center gap-3 border-3 border-slate-800 p-2.5 bg-white shadow-brutal-sm rounded-xl transition-all ${collapsed ? 'justify-center p-2' : ''}`}>
@@ -110,32 +108,6 @@ export const Sidebar = () => {
               </div>
             )}
           </div>
-
-          {/* Interactive Sidebar Slider Switch */}
-          {!isMobileLayout && (
-            <div 
-              onClick={toggleCollapse}
-              className={`border-3 border-slate-800 rounded-xl p-2.5 bg-slate-100 flex items-center justify-between cursor-pointer transition-all hover:bg-slate-200 select-none shadow-[2px_2px_0px_#000] ${
-                collapsed ? 'flex-col gap-1 py-3' : 'px-3'
-              }`}
-              title={collapsed ? "Click slider to expand sidebar" : "Click slider to collapse sidebar"}
-            >
-              {!collapsed && (
-                <span className="font-heading font-black text-[10px] uppercase text-slate-700 tracking-wider flex items-center gap-1.5">
-                  <Sliders size={12} className="text-brand-red animate-pulse" /> SIDEBAR SLIDER
-                </span>
-              )}
-              <div className={`relative w-11 h-6 bg-slate-300 border-2 border-slate-800 rounded-full transition-colors ${!collapsed ? 'bg-brand-red/20' : ''}`}>
-                <div 
-                  className={`absolute top-0.5 w-4.5 h-4.5 bg-brand-red border border-slate-800 rounded-full shadow-sm transition-transform duration-200 flex items-center justify-center text-white text-[8px] font-bold ${
-                    !collapsed ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                >
-                  {!collapsed ? <ChevronLeft size={10} /> : <ChevronRight size={10} />}
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Navigation Links formatted as Premium Brutalist Cards */}
           <nav className="flex flex-col gap-4">
