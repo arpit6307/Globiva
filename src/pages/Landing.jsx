@@ -489,7 +489,7 @@ export const Landing = () => {
       </section>
 
       {/* 8. Detailed Footer */}
-      <footer className="w-full max-w-6xl mx-auto py-6 text-center border-t-3 border-ink-black bg-ink-black text-white rounded-t-xl z-10 flex flex-col sm:flex-row justify-between items-center px-6 gap-4 text-[10px] font-heading font-bold tracking-widest">
+      <footer className="w-full max-w-6xl mx-auto py-6 text-center border-t-3 border-ink-black bg-ink-black text-white rounded-t-xl z-10 flex flex-col md:flex-row justify-between items-center px-6 gap-4 text-[11px] font-heading font-bold tracking-widest">
         <div className="flex items-center gap-2">
           <img 
             src={logoImg} 
@@ -499,10 +499,15 @@ export const Landing = () => {
           <span>&copy; {new Date().getFullYear()} GLOBIVA BPO LEARN. ALL RIGHTS RESERVED.</span>
         </div>
         
+        {/* Developer Credit */}
+        <div className="text-warning-yellow font-heading font-black text-xs uppercase tracking-wider flex items-center gap-1">
+          Developed with <span className="text-brand-red text-sm animate-pulse">❤️</span> <span className="text-white">Arpit Singh Yadav</span>
+        </div>
+
         {/* Subtle Trainer Portal Login */}
         <Link 
           to="/admin/login" 
-          className="text-gray-400 hover:text-white underline transition-colors"
+          className="text-gray-400 hover:text-white underline transition-colors text-[10px]"
           title="Trainer Login Only"
         >
           TRAINER ACCESS

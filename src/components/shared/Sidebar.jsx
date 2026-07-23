@@ -160,6 +160,12 @@ export const Sidebar = () => {
             {!collapsed && <span>LOG OUT</span>}
           </button>
 
+          {!collapsed && (
+            <div className="text-[10px] font-heading font-bold text-slate-500 text-center border-t border-slate-200 pt-3 leading-tight select-none">
+              Developed with <span className="text-red-500 font-normal">❤️</span> <span className="font-black text-slate-800">Arpit Singh Yadav</span>
+            </div>
+          )}
+
         </div>
       </div>
     );
