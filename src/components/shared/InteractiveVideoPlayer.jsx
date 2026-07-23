@@ -27,6 +27,20 @@ export const InteractiveVideoPlayer = ({ videoModule, onComplete, initialComplet
   const [isCompleted, setIsCompleted] = useState(initialCompleted);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [sceneFinished, setSceneFinished] = useState(initialCompleted);
+  const [speechRate, setSpeechRate] = useState(1.0);
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      const loadVoices = () => {
+        const voices = window.speechSynthesis.getVoices();
+        setAvailableVoices(voices);
+      };
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
 
   // Audio Context Ref & Audio Element Ref
   const audioCtxRef = useRef(null);
@@ -176,16 +190,21 @@ export const InteractiveVideoPlayer = ({ videoModule, onComplete, initialComplet
 
       const utterance = new SpeechSynthesisUtterance(dialogue.text);
       utterance.volume = 1.0;
+
+      if (selectedVoiceURI && availableVoices.length > 0) {
+        const matched = availableVoices.find(v => v.voiceURI === selectedVoiceURI);
+        if (matched) utterance.voice = matched;
+      }
       
       const isFemale = dialogue.voiceGender === 'female';
       const isQuestion = dialogue.text.includes('?');
 
       // Voice Pitch & Rate Modulation
       utterance.pitch = isFemale 
-        ? (isQuestion ? 1.35 : 1.25) // High enthusiastic pitch for Trainer Sarah
-        : (isQuestion ? 0.95 : 0.82); // Deep inquisitive pitch for Agent Alex
+        ? (isQuestion ? 1.35 : 1.25) // Expressive female pitch
+        : (isQuestion ? 0.95 : 0.82); // Inquisitive male pitch
 
-      utterance.rate = isFemale ? 1.02 : 0.94; // Expressive tempo variation
+      utterance.rate = speechRate * (isFemale ? 1.02 : 0.94); // Synchronized playback rate
       utterance.lang = 'en-US';
 
       utterance.onend = () => {
@@ -325,7 +344,42 @@ export const InteractiveVideoPlayer = ({ videoModule, onComplete, initialComplet
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Playback Speed Rate Controls (0.8x, 1x, 1.2x, 1.5x) */}
+          <div className="flex items-center bg-slate-800 border-2 border-slate-700 rounded-xl p-0.5 shadow-sm">
+            {[0.8, 1.0, 1.2, 1.5].map((rate) => (
+              <button
+                key={rate}
+                onClick={() => setSpeechRate(rate)}
+                className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-lg transition-all cursor-pointer ${
+                  speechRate === rate 
+                    ? 'bg-brand-red text-white shadow-sm' 
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title={`Set speech speed to ${rate}x`}
+              >
+                {rate}x
+              </button>
+            ))}
+          </div>
+
+          {/* SpeechSynthesis Voice Selector Dropdown */}
+          {availableVoices.length > 0 && (
+            <select
+              value={selectedVoiceURI}
+              onChange={(e) => setSelectedVoiceURI(e.target.value)}
+              className="bg-slate-800 text-slate-200 border-2 border-slate-700 rounded-xl text-[10px] font-heading font-bold px-2 py-1 focus:outline-none max-w-[130px] truncate cursor-pointer"
+              title="Select Text-to-Speech Voice"
+            >
+              <option value="">AUTO VOICE</option>
+              {availableVoices.filter(v => v.lang.startsWith('en')).slice(0, 12).map((voice, idx) => (
+                <option key={idx} value={voice.voiceURI}>
+                  {voice.name.replace(/Google|Microsoft|Apple/g, '').trim()}
+                </option>
+              ))}
+            </select>
+          )}
+
           <button 
             onClick={() => {
               initAudioContext();
