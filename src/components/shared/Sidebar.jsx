@@ -167,36 +167,55 @@ export const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Sticky Top Header with Hamburger Button */}
-      <div className="lg:hidden sticky top-0 w-full bg-white/95 backdrop-blur-md border-b-3 border-slate-800 px-4 sm:px-6 py-3 flex items-center justify-between z-40 shadow-sm">
-        <div className="flex items-center gap-2">
+      {/* Mobile Fixed Top Header with Hamburger Button */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-b-3 border-slate-800 px-4 sm:px-6 py-2.5 flex items-center justify-between z-50 shadow-md">
+        <div className="flex items-center gap-2.5">
           <img 
             src={logoImg} 
             alt="Globiva Logo" 
-            className="h-8 w-auto object-contain border border-slate-800 rounded bg-white p-0.5" 
+            className="h-9 w-auto object-contain border-2 border-slate-800 rounded-lg bg-white p-0.5 shadow-[2px_2px_0px_#000]" 
           />
           <div className="flex flex-col">
             <span className="font-heading font-black text-xs uppercase tracking-wider text-slate-800">GLOBIVA LEARN</span>
-            <span className="text-[9px] font-mono text-brand-red font-bold uppercase">{role === 'admin' ? 'TRAINER PORTAL' : 'STUDENT PORTAL'}</span>
+            <span className="text-[9px] font-mono text-brand-red font-bold uppercase tracking-wider">{role === 'admin' ? 'TRAINER PORTAL' : 'STUDENT PORTAL'}</span>
           </div>
         </div>
         
+        {/* Prominent Hamburger Menu Button */}
         <button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
           aria-label={isMobileOpen ? "Close mobile menu" : "Open mobile menu"}
-          className="p-2 border-2 border-slate-800 rounded-xl bg-white shadow-[2px_2px_0px_#000] hover:bg-slate-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer flex items-center gap-1.5 font-heading font-black text-xs text-slate-800"
+          className="p-2 px-3 border-2 border-slate-800 rounded-xl bg-brand-red text-white shadow-[3px_3px_0px_#000] hover:bg-brand-red-dark active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer flex items-center gap-2 font-heading font-black text-xs select-none"
         >
-          {isMobileOpen ? <X size={20} className="text-brand-red" /> : <Menu size={20} className="text-slate-800" />}
-          <span className="text-[10px] uppercase hidden sm:inline">{isMobileOpen ? 'CLOSE' : 'MENU'}</span>
+          {isMobileOpen ? <X size={20} className="text-white" /> : <Menu size={20} className="text-white" />}
+          <span className="text-xs uppercase font-heading tracking-wider">{isMobileOpen ? 'CLOSE' : 'MENU'}</span>
         </button>
       </div>
+
+      {/* Top Spacer for Mobile Fixed Header to prevent layout overlap */}
+      <div className="lg:hidden h-16 w-full shrink-0" />
 
       {/* Mobile Drawer Overlay */}
       {isMobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)}></div>
-          <div className="relative w-80 max-w-[85vw] h-full z-50 shadow-2xl animate-in slide-in-from-left duration-200">
-            {sidebarContent(true)}
+          <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-md transition-opacity" onClick={() => setIsMobileOpen(false)} />
+          <div className="relative w-80 max-w-[85vw] h-full z-50 shadow-2xl animate-in slide-in-from-left duration-200 flex flex-col">
+            {/* Drawer Close Button Header */}
+            <div className="bg-slate-900 text-white p-4 border-r-3 border-b-3 border-slate-800 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="font-heading font-black text-xs uppercase text-white tracking-wider">NAVIGATION</span>
+              </div>
+              <button 
+                onClick={() => setIsMobileOpen(false)}
+                className="p-1.5 bg-slate-800 text-white rounded-lg border border-slate-700 hover:bg-slate-700 cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-hidden">
+              {sidebarContent(true)}
+            </div>
           </div>
         </div>
       )}
