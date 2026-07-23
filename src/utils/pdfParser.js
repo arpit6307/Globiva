@@ -1,8 +1,9 @@
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Configure pdfjs worker to use cdnjs/unpkg js worker script
-if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs`;
+// Dynamically configure pdfjs workerSrc using exact matching pdfjsLib.version
+if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+  const version = pdfjsLib.version || '4.10.38';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.mjs`;
 }
 
 /**
@@ -19,8 +20,14 @@ export const extractTextFromPdf = async (pdfFile) => {
     const arrayBuffer = await pdfFile.arrayBuffer();
     let fullText = '';
 
-    // Primary Attempt: pdfjs-dist page parsing
+    // Primary Attempt: pdfjs-dist page parsing with dynamic worker matching
     try {
+      // Ensure worker version matches pdfjsLib.version exactly
+      if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+        const version = pdfjsLib.version || '4.10.38';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.mjs`;
+      }
+
       const loadingTask = pdfjsLib.getDocument({ 
         data: arrayBuffer,
         useSystemFonts: true,
@@ -35,30 +42,46 @@ export const extractTextFromPdf = async (pdfFile) => {
         fullText += pageStrings.join(' ') + '\n';
       }
     } catch (pdfJsErr) {
-      console.warn("pdfjs-dist worker warning, attempting binary stream extraction fallback:", pdfJsErr);
+      console.warn("pdfjs-dist primary worker error, trying CDN fallback worker...", pdfJsErr);
       
-      // Fallback Attempt: Binary TextDecoder parsing for embedded text streams
-      const decoder = new TextDecoder('utf-8');
-      const rawString = decoder.decode(arrayBuffer);
-      
-      // Extract text content inside PDF text objects (Tj / TJ operators) or text blocks
-      const textMatches = rawString.match(/\(([^\(\)]+)\)\s*Tj/g) || rawString.match(/\[([^\[\]]+)\]\s*TJ/g);
-      if (textMatches && textMatches.length > 0) {
-        fullText = textMatches
-          .map(m => m.replace(/[()\[\]]/g, '').replace(/Tj|TJ/g, '').trim())
-          .filter(t => t.length > 2)
-          .join(' ');
-      } else {
-        // Fallback 2: Extract clean printable words
-        const printableWords = rawString.replace(/[^a-zA-Z0-9\s.,;:\-\_\?\!\(\)]/g, ' ').split(/\s+/).filter(w => w.length >= 3);
-        if (printableWords.length > 30) {
-          fullText = printableWords.join(' ');
+      try {
+        // Fallback 1: Try cdnjs worker with matching version
+        const version = pdfjsLib.version || '4.10.38';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`;
+        
+        const loadingTask2 = pdfjsLib.getDocument({ data: arrayBuffer });
+        const pdf2 = await loadingTask2.promise;
+        for (let p = 1; p <= pdf2.numPages; p++) {
+          const page = await pdf2.getPage(p);
+          const tc = await page.getTextContent();
+          fullText += tc.items.map(i => i.str).join(' ') + '\n';
+        }
+      } catch (fallbackErr) {
+        console.warn("CDN worker fallback error, attempting raw stream decoder:", fallbackErr);
+        
+        // Fallback 2: TextDecoder stream parsing for uncompressed/partially compressed PDF text
+        const decoder = new TextDecoder('utf-8');
+        const rawString = decoder.decode(arrayBuffer);
+        
+        // Extract text inside PDF text operators (Tj, TJ, et al.)
+        const textMatches = rawString.match(/\(([^\(\)]+)\)\s*Tj/g) || rawString.match(/\[([^\[\]]+)\]\s*TJ/g);
+        if (textMatches && textMatches.length > 0) {
+          fullText = textMatches
+            .map(m => m.replace(/[()\[\]]/g, '').replace(/Tj|TJ/g, '').trim())
+            .filter(t => t.length > 1)
+            .join(' ');
+        } else {
+          // Extract printable text tokens
+          const printableWords = rawString.replace(/[^a-zA-Z0-9\s.,;:\-\_\?\!\(\)]/g, ' ').split(/\s+/).filter(w => w.length >= 3);
+          if (printableWords.length > 20) {
+            fullText = printableWords.join(' ');
+          }
         }
       }
     }
 
     const trimmedText = fullText.trim();
-    if (!trimmedText || trimmedText.length < 15) {
+    if (!trimmedText || trimmedText.length < 10) {
       throw new Error("This PDF has no readable text. Please upload a text-based PDF.");
     }
     return trimmedText;
