@@ -20,8 +20,6 @@ import {
   Bookmark,
   Menu,
   X,
-  Flame,
-  Rocket,
   BarChart3
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -190,63 +188,43 @@ export const Landing = () => {
               <a 
                 href="#why-us" 
                 onClick={() => setIsMobileMenuOpen(false)} 
-                className="font-heading font-black text-xs sm:text-sm uppercase tracking-wider text-slate-800 border-2 border-slate-800 p-3 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50 transition-all cursor-pointer"
+                className="font-heading font-black text-sm uppercase text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50"
               >
-                <div className="p-2 bg-brand-red-light border-2 border-slate-800 rounded-lg text-brand-red shadow-[2px_2px_0px_#000] shrink-0">
-                  <Flame size={16} />
-                </div>
+                <Zap size={18} className="text-brand-red shrink-0" />
                 <span>WHY GLOBIVA</span>
               </a>
               <a 
                 href="#journey" 
                 onClick={() => setIsMobileMenuOpen(false)} 
-                className="font-heading font-black text-xs sm:text-sm uppercase tracking-wider text-slate-800 border-2 border-slate-800 p-3 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50 transition-all cursor-pointer"
+                className="font-heading font-black text-sm uppercase text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50"
               >
-                <div className="p-2 bg-brand-red-light border-2 border-slate-800 rounded-lg text-brand-red shadow-[2px_2px_0px_#000] shrink-0">
-                  <Rocket size={16} />
-                </div>
+                <TrendingUp size={18} className="text-blue-600 shrink-0" />
                 <span>OUR JOURNEY</span>
               </a>
               <a 
                 href="#metrics" 
                 onClick={() => setIsMobileMenuOpen(false)} 
-                className="font-heading font-black text-xs sm:text-sm uppercase tracking-wider text-slate-800 border-2 border-slate-800 p-3 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50 transition-all cursor-pointer"
+                className="font-heading font-black text-sm uppercase text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50"
               >
-                <div className="p-2 bg-brand-red-light border-2 border-slate-800 rounded-lg text-brand-red shadow-[2px_2px_0px_#000] shrink-0">
-                  <BarChart3 size={16} />
-                </div>
+                <BarChart3 size={18} className="text-green-600 shrink-0" />
                 <span>METRICS & SLAs</span>
               </a>
               <a 
                 href="#faq" 
                 onClick={() => setIsMobileMenuOpen(false)} 
-                className="font-heading font-black text-xs sm:text-sm uppercase tracking-wider text-slate-800 border-2 border-slate-800 p-3 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50 transition-all cursor-pointer"
+                className="font-heading font-black text-sm uppercase text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000] flex items-center gap-3 hover:bg-slate-50"
               >
-                <div className="p-2 bg-brand-red-light border-2 border-slate-800 rounded-lg text-brand-red shadow-[2px_2px_0px_#000] shrink-0">
-                  <HelpCircle size={16} />
-                </div>
+                <HelpCircle size={18} className="text-amber-500 shrink-0" />
                 <span>GUIDELINES FAQ</span>
               </a>
 
               <div className="border-t-2 border-dashed border-slate-300 pt-5 flex flex-col gap-3 mt-auto">
-                <span className="font-heading font-black text-xs text-slate-400 uppercase tracking-widest">PORTAL LOGINS</span>
+                <span className="font-heading font-black text-xs text-slate-400 uppercase tracking-widest">PORTAL LOGIN</span>
                 <button 
                   onClick={() => { setIsMobileMenuOpen(false); navigate('/employee/login'); }}
                   className="btn-brutal-primary w-full py-4 text-sm font-black flex items-center justify-center gap-2"
                 >
-                  <User size={16} /> AGENT PORTAL LOGIN
-                </button>
-                <button 
-                  onClick={() => { setIsMobileMenuOpen(false); navigate('/admin/login'); }}
-                  className="btn-brutal-secondary w-full py-4 text-sm font-black flex items-center justify-center gap-2"
-                >
-                  <Briefcase size={16} /> TRAINER PORTAL LOGIN
-                </button>
-                <button 
-                  onClick={() => { setIsMobileMenuOpen(false); navigate('/admin/signup'); }}
-                  className="btn-brutal-yellow w-full py-3.5 text-xs font-black flex items-center justify-center gap-2"
-                >
-                  <Sparkles size={14} /> NEW TRAINER SIGNUP
+                  <User size={18} /> AGENT PORTAL LOGIN
                 </button>
               </div>
             </div>
