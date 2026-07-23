@@ -775,7 +775,9 @@ const MemoryMatchGame = ({ keyTerms, onFinish, sound, addXp, incrementStreak, re
 
   useEffect(() => {
     const list = [];
-    keyTerms.forEach((item, idx) => {
+    // Exactly 3 key terms => 3 pairs = 6 cards total (3x2 grid)
+    const targetTerms = keyTerms.slice(0, 3);
+    targetTerms.forEach((item, idx) => {
       // Card for Term
       list.push({ 
         id: `term-${idx}`, 
@@ -881,8 +883,8 @@ const MemoryMatchGame = ({ keyTerms, onFinish, sound, addXp, incrementStreak, re
           Flip cards to match the term with its description
         </h4>
 
-        {/* 4-column responsive matching board */}
-        <div class="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 select-none p-2">
+        {/* 6 Cards 3x2 Grid Matching Board */}
+        <div class="w-full max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6 select-none p-2">
           {cards.map((card, idx) => {
             const isSelected = selected.includes(idx);
             const showFace = card.flipped || card.matched;
