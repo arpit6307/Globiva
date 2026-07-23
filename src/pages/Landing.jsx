@@ -489,26 +489,25 @@ export const Landing = () => {
       </section>
 
       {/* 8. Detailed Footer */}
-      <footer className="w-full max-w-6xl mx-auto py-6 text-center border-t-3 border-ink-black bg-ink-black text-white rounded-t-xl z-10 flex flex-col md:flex-row justify-between items-center px-6 gap-4 text-[11px] font-heading font-bold tracking-widest">
+      <footer className="w-full max-w-6xl mx-auto py-6 text-center border-t-3 border-ink-black bg-ink-black text-white rounded-t-xl z-10 flex flex-col sm:flex-row justify-between items-center px-6 gap-4 text-xs font-heading font-bold tracking-wider">
         <div className="flex items-center gap-2">
           <img 
             src={logoImg} 
             alt="Globiva Logo" 
             className="h-6 w-auto object-contain bg-white rounded p-0.5 border border-white/20" 
           />
-          <span>&copy; {new Date().getFullYear()} GLOBIVA BPO LEARN. ALL RIGHTS RESERVED.</span>
+          <span className="text-gray-300">&copy; {new Date().getFullYear()} GLOBIVA LEARN. ALL RIGHTS RESERVED.</span>
         </div>
         
-        {/* Developer Credit */}
-        <div className="text-warning-yellow font-heading font-black text-xs uppercase tracking-wider flex items-center gap-1">
-          Developed with <span className="text-brand-red text-sm animate-pulse">❤️</span> <span className="text-white">Arpit Singh Yadav</span>
+        <div className="flex items-center gap-2 bg-slate-800 border border-slate-700 px-4 py-2 rounded-xl text-white shadow-sm font-heading font-black text-xs uppercase tracking-wider">
+          <span>Developed with ❤️ by <span className="text-warning-yellow font-extrabold">Arpit Singh Yadav</span></span>
         </div>
 
         {/* Subtle Trainer Portal Login */}
         <Link 
           to="/admin/login" 
-          className="text-gray-400 hover:text-white underline transition-colors text-[10px]"
-          title="Trainer Login Only"
+          className="text-gray-400 hover:text-white underline transition-colors text-[11px]"
+          title="Trainer Access Only"
         >
           TRAINER ACCESS
         </Link>
