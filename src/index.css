@@ -1,0 +1,295 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-paper-white text-ink-black min-h-screen font-body antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-black tracking-tight;
+  }
+
+  /* Collapsible Sidebar sizing variables */
+  :root {
+    --sidebar-width: 18rem; /* 72 */
+  }
+  body.sidebar-collapsed {
+    --sidebar-width: 5.5rem; /* 22 */
+  }
+}
+
+/* Custom Brutalist Utility Classes */
+@layer components {
+  /* Layout adapts automatically to sidebar width change */
+  .main-content-layout {
+    padding-left: 0;
+    transition: padding-left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (min-width: 1024px) {
+    .main-content-layout {
+      padding-left: var(--sidebar-width);
+    }
+  }
+
+  /* Repeating stripe background for brutalist styling */
+  .bg-stripes {
+    background-color: #FFFDF9;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #F7E3E3,
+      #F7E3E3 10px,
+      #FFFDF9 10px,
+      #FFFDF9 20px
+    );
+  }
+
+  .bg-stripes-yellow {
+    background-color: #FFFDF9;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #FFF0C2,
+      #FFF0C2 10px,
+      #FFFDF9 10px,
+      #FFFDF9 20px
+    );
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(#111111 1.5px, transparent 1.5px);
+    background-size: 16px 16px;
+  }
+
+  /* Buttons - Heavy press, hover shift and pop */
+  .btn-brutal-primary {
+    @apply bg-brand-red text-white font-heading font-black uppercase tracking-wider text-xs px-6 py-3.5 border-3 border-ink-black rounded-xl shadow-brutal transition-all duration-150 hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-brutal-lg active:translate-x-[6px] active:translate-y-[6px] active:shadow-none hover:bg-brand-red-dark select-none inline-flex items-center justify-center gap-2;
+  }
+  
+  .btn-brutal-secondary {
+    @apply bg-white text-ink-black font-heading font-black uppercase tracking-wider text-xs px-6 py-3.5 border-3 border-ink-black rounded-xl shadow-brutal transition-all duration-150 hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-brutal-lg active:translate-x-[6px] active:translate-y-[6px] active:shadow-none hover:bg-paper-white select-none inline-flex items-center justify-center gap-2;
+  }
+
+  .btn-brutal-yellow {
+    @apply bg-warning-yellow text-ink-black font-heading font-black uppercase tracking-wider text-xs px-6 py-3.5 border-3 border-ink-black rounded-xl shadow-brutal transition-all duration-150 hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-brutal-lg active:translate-x-[6px] active:translate-y-[6px] active:shadow-none hover:bg-amber-400 select-none inline-flex items-center justify-center gap-2;
+  }
+
+  .btn-brutal-green {
+    @apply bg-success-green text-white font-heading font-black uppercase tracking-wider text-xs px-6 py-3.5 border-3 border-ink-black rounded-xl shadow-brutal transition-all duration-150 hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-brutal-lg active:translate-x-[6px] active:translate-y-[6px] active:shadow-none hover:bg-green-700 select-none inline-flex items-center justify-center gap-2;
+  }
+
+  .btn-brutal-danger {
+    @apply bg-error-red text-white font-heading font-black uppercase tracking-wider text-xs px-6 py-3.5 border-3 border-ink-black rounded-xl shadow-brutal transition-all duration-150 hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-brutal-lg active:translate-x-[6px] active:translate-y-[6px] active:shadow-none hover:bg-red-800 select-none inline-flex items-center justify-center gap-2;
+  }
+
+  /* Cards - Thick borders, solid shadows */
+  .card-brutal {
+    @apply bg-card-white border-3 border-ink-black rounded-xl shadow-brutal p-6 transition-all duration-200 relative;
+  }
+
+  .card-brutal-interactive {
+    @apply bg-card-white border-3 border-ink-black rounded-xl shadow-brutal p-6 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:-translate-x-1 hover:shadow-brutal-lg active:translate-x-[6px] active:translate-y-[6px] active:shadow-none;
+  }
+  
+  /* Form Inputs - Animate border shadow on focus */
+  .input-brutal {
+    @apply bg-white border-3 border-ink-black rounded-xl p-3 focus:outline-none focus:ring-4 focus:ring-brand-red-light focus:bg-white font-body font-bold text-ink-black transition-all shadow-brutal-sm placeholder-gray-400 text-sm;
+  }
+  
+  .badge-brutal {
+    @apply border-2 border-ink-black rounded-full px-3.5 py-1.5 text-[10px] font-black font-heading uppercase tracking-wider inline-flex items-center gap-1 select-none shadow-brutal-sm;
+  }
+  
+  .table-brutal {
+    @apply w-full border-collapse border-3 border-ink-black bg-white rounded-xl overflow-hidden shadow-brutal;
+  }
+  
+  .th-brutal {
+    @apply border-b-3 border-r-2 border-ink-black bg-ink-black text-white p-4 font-heading font-black uppercase tracking-wider text-left text-xs;
+  }
+  
+  .td-brutal {
+    @apply border-b-2 border-r-2 border-ink-black p-4 font-body font-bold text-sm;
+  }
+}
+
+/* Wiggle Keyframe Animation */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
+.animate-wiggle {
+  animation: wiggle 0.3s ease-in-out infinite;
+}
+
+@keyframes pulseBorder {
+  0%, 100% { border-color: #111111; }
+  50% { border-color: #8B1D1D; }
+}
+
+.animate-pulse-border {
+  animation: pulseBorder 1.5s infinite;
+}
+
+/* ===== CINEMATIC ANIMATIONS ===== */
+
+/* Glitch Text Effect */
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+.animate-glitch {
+  animation: glitch 0.3s ease-in-out;
+}
+
+/* Scanline Effect Overlay */
+.scanline-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Dark Grid Background */
+.bg-dark-grid {
+  background-color: #0a0a0a;
+  background-image: 
+    linear-gradient(rgba(139,29,29,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,29,29,0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Typewriter Blinking Cursor */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.animate-blink {
+  animation: blink-cursor 1s step-end infinite;
+}
+
+/* Red Glow Pulse */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(139,29,29,0.3), 0 0 40px rgba(139,29,29,0.1); }
+  50% { box-shadow: 0 0 30px rgba(139,29,29,0.6), 0 0 60px rgba(139,29,29,0.2); }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Shake Animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(2deg); }
+  66% { transform: translateY(5px) rotate(-1deg); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Slow Spin */
+@keyframes slow-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-slow-spin {
+  animation: slow-spin 20s linear infinite;
+}
+
+/* Level Node Pulse */
+@keyframes node-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139,29,29,0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(139,29,29,0); }
+}
+.animate-node-pulse {
+  animation: node-pulse 2s ease-in-out infinite;
+}
+
+/* Card Shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Slide In From Left */
+@keyframes slideInLeft {
+  from { transform: translateX(-30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.animate-slide-in {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+/* Count Up Ticker */
+@keyframes countFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-count-up {
+  animation: countFade 0.6s ease-out forwards;
+}
+
+/* HP Bar Flash */
+@keyframes flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-flash {
+  animation: flash 0.3s ease-in-out;
+}
+
+/* Print Styles */
+@media print {
+  .no-print { display: none !important; }
+  .card-brutal { box-shadow: none !important; border-width: 1px !important; }
+  body { background: white !important; }
+}
+
+/* Custom Scrollbar for Neo-Brutalist look */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFFDF9;
+  border-left: 3px solid #111111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8B1D1D;
+  border: 3px solid #111111;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5E1313;
+}
