@@ -1,7 +1,9 @@
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Configure pdfjs worker to use unpkg worker script
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+// Configure pdfjs worker to use cdnjs/unpkg js worker script
+if (typeof window !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs`;
+}
 
 /**
  * Extracts text content page-by-page from an uploaded PDF file.
@@ -9,25 +11,59 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLi
  * @returns {Promise<string>} Full extracted plain text
  */
 export const extractTextFromPdf = async (pdfFile) => {
+  if (!pdfFile) {
+    throw new Error("No PDF file selected. Please select a valid PDF.");
+  }
+
   try {
     const arrayBuffer = await pdfFile.arrayBuffer();
-    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-    const pdf = await loadingTask.promise;
-    
     let fullText = '';
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-      const page = await pdf.getPage(pageNum);
-      const textContent = await page.getTextContent();
-      const pageStrings = textContent.items.map(item => item.str);
-      fullText += pageStrings.join(' ') + '\n';
+
+    // Primary Attempt: pdfjs-dist page parsing
+    try {
+      const loadingTask = pdfjsLib.getDocument({ 
+        data: arrayBuffer,
+        useSystemFonts: true,
+        isEvalSupported: false
+      });
+      const pdf = await loadingTask.promise;
+      
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        const pageStrings = textContent.items.map(item => item.str);
+        fullText += pageStrings.join(' ') + '\n';
+      }
+    } catch (pdfJsErr) {
+      console.warn("pdfjs-dist worker warning, attempting binary stream extraction fallback:", pdfJsErr);
+      
+      // Fallback Attempt: Binary TextDecoder parsing for embedded text streams
+      const decoder = new TextDecoder('utf-8');
+      const rawString = decoder.decode(arrayBuffer);
+      
+      // Extract text content inside PDF text objects (Tj / TJ operators) or text blocks
+      const textMatches = rawString.match(/\(([^\(\)]+)\)\s*Tj/g) || rawString.match(/\[([^\[\]]+)\]\s*TJ/g);
+      if (textMatches && textMatches.length > 0) {
+        fullText = textMatches
+          .map(m => m.replace(/[()\[\]]/g, '').replace(/Tj|TJ/g, '').trim())
+          .filter(t => t.length > 2)
+          .join(' ');
+      } else {
+        // Fallback 2: Extract clean printable words
+        const printableWords = rawString.replace(/[^a-zA-Z0-9\s.,;:\-\_\?\!\(\)]/g, ' ').split(/\s+/).filter(w => w.length >= 3);
+        if (printableWords.length > 30) {
+          fullText = printableWords.join(' ');
+        }
+      }
     }
+
     const trimmedText = fullText.trim();
-    if (!trimmedText || trimmedText.length < 10) {
+    if (!trimmedText || trimmedText.length < 15) {
       throw new Error("This PDF has no readable text. Please upload a text-based PDF.");
     }
     return trimmedText;
   } catch (error) {
-    console.error("Error reading PDF text with pdfjs-dist:", error);
+    console.error("Error reading PDF text:", error);
     throw new Error(error.message || "Could not parse text from PDF file. Please ensure it is a valid text-based PDF.");
   }
 };

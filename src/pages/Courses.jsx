@@ -948,6 +948,12 @@ export const Courses = () => {
                 </p>
               </div>
 
+              {error && (
+                <div className="bg-error-red text-white p-3 border-2 border-slate-800 rounded-xl font-heading font-bold text-xs shadow-[2px_2px_0px_#000] flex items-center gap-2">
+                  <X size={16} /> {error}
+                </div>
+              )}
+
               {parsingPdf ? (
                 <div className="p-8 border-3 border-slate-800 rounded-xl bg-slate-50 flex flex-col items-center justify-center text-center gap-4">
                   <div className="w-12 h-12 border-4 border-slate-800 border-t-brand-red rounded-full animate-spin bg-white shadow-[3px_3px_0px_#000]" />
