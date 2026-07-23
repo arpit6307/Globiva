@@ -17,7 +17,9 @@ import {
   TrendingUp,
   Users,
   ChevronUp,
-  Bookmark
+  Bookmark,
+  Menu,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoImg from '../assets/logo.png';
@@ -98,26 +100,29 @@ export const Landing = () => {
     }
   ];
 
+  // Mobile menu toggle
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen text-ink-black flex flex-col justify-between relative overflow-hidden select-none">
       
       {/* 1. Sticky Floating Navbar (Centered and padded) */}
       <nav className="fixed top-4 left-0 right-0 px-4 z-40 max-w-6xl mx-auto">
-        <div className="border-3 border-ink-black bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-brutal flex justify-between items-center">
+        <div className="border-3 border-ink-black bg-white/95 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl shadow-brutal flex justify-between items-center">
           
           <div className="flex items-center gap-3">
             <img 
               src={logoImg} 
               alt="Globiva Logo" 
-              className="h-10 w-auto object-contain border border-ink-black rounded bg-white p-0.5" 
+              className="h-9 sm:h-10 w-auto object-contain border border-ink-black rounded bg-white p-0.5" 
             />
             <div className="flex flex-col">
-              <span className="font-heading font-black text-lg tracking-tighter leading-none text-ink-black">GLOBIVA</span>
+              <span className="font-heading font-black text-base sm:text-lg tracking-tighter leading-none text-ink-black">GLOBIVA</span>
               <span className="font-heading font-bold text-[9px] tracking-widest text-brand-red mt-1 uppercase">Passion to Perform</span>
             </div>
           </div>
 
-          {/* Nav links for fully-fledged website look */}
+          {/* Desktop Nav links */}
           <div className="hidden md:flex items-center gap-6 font-heading font-black text-xs uppercase tracking-wider text-gray-500">
             <a href="#why-us" className="hover:text-brand-red transition-colors">Why Globiva</a>
             <a href="#journey" className="hover:text-brand-red transition-colors">Our Journey</a>
@@ -125,15 +130,114 @@ export const Landing = () => {
             <a href="#faq" className="hover:text-brand-red transition-colors">Guidelines FAQ</a>
           </div>
 
+          {/* Desktop Login Button */}
+          <div className="hidden md:flex items-center gap-3">
+            <button 
+              onClick={() => navigate('/admin/login')}
+              className="btn-brutal-secondary py-2 px-3 shadow-brutal-sm text-xs font-black flex items-center gap-1.5"
+            >
+              <Briefcase size={14} /> TRAINER LOGIN
+            </button>
+            <button 
+              onClick={() => navigate('/employee/login')}
+              className="btn-brutal-primary py-2 px-4 shadow-brutal-sm text-xs font-black flex items-center gap-1.5"
+            >
+              <User size={14} /> AGENT LOGIN
+            </button>
+          </div>
+
+          {/* Mobile Hamburger Button */}
           <button 
-            onClick={() => navigate('/employee/login')}
-            className="btn-brutal-secondary py-2 px-4 shadow-brutal-sm text-xs font-black flex items-center gap-1.5"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden bg-brand-red text-white p-2 px-3 border-2 border-slate-800 rounded-xl shadow-[3px_3px_0px_#000] flex items-center gap-1.5 font-heading font-black text-xs cursor-pointer active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            aria-label="Toggle mobile menu"
           >
-            <User size={14} /> ASSOCIATE LOGIN
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            <span className="uppercase text-xs">{isMobileMenuOpen ? 'CLOSE' : 'MENU'}</span>
           </button>
 
         </div>
       </nav>
+
+      {/* Mobile Drawer Navigation Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 md:hidden flex flex-col bg-slate-900/80 backdrop-blur-md"
+          >
+            <div className="flex justify-between items-center p-5 bg-white border-b-3 border-slate-800">
+              <div className="flex items-center gap-2">
+                <img src={logoImg} alt="Globiva Logo" className="h-8 w-auto border border-slate-800 rounded p-0.5" />
+                <span className="font-heading font-black text-sm uppercase">GLOBIVA LEARN</span>
+              </div>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 bg-brand-red text-white border-2 border-slate-800 rounded-xl shadow-[2px_2px_0px_#000]"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 flex flex-col gap-5 bg-paper-white flex-1 overflow-y-auto">
+              <span className="font-heading font-black text-xs text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">QUICK NAVIGATION</span>
+              
+              <a 
+                href="#why-us" 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="font-heading font-black text-base text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000]"
+              >
+                🔥 WHY GLOBIVA
+              </a>
+              <a 
+                href="#journey" 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="font-heading font-black text-base text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000]"
+              >
+                🚀 OUR JOURNEY
+              </a>
+              <a 
+                href="#metrics" 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="font-heading font-black text-base text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000]"
+              >
+                📈 METRICS & SLAs
+              </a>
+              <a 
+                href="#faq" 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="font-heading font-black text-base text-slate-800 border-2 border-slate-800 p-3.5 rounded-xl bg-white shadow-[3px_3px_0px_#000]"
+              >
+                ❓ GUIDELINES FAQ
+              </a>
+
+              <div className="border-t-2 border-dashed border-slate-300 pt-5 flex flex-col gap-3 mt-auto">
+                <span className="font-heading font-black text-xs text-slate-400 uppercase tracking-widest">PORTAL LOGINS</span>
+                <button 
+                  onClick={() => { setIsMobileMenuOpen(false); navigate('/employee/login'); }}
+                  className="btn-brutal-primary w-full py-4 text-sm font-black flex items-center justify-center gap-2"
+                >
+                  <User size={16} /> AGENT PORTAL LOGIN
+                </button>
+                <button 
+                  onClick={() => { setIsMobileMenuOpen(false); navigate('/admin/login'); }}
+                  className="btn-brutal-secondary w-full py-4 text-sm font-black flex items-center justify-center gap-2"
+                >
+                  <Briefcase size={16} /> TRAINER PORTAL LOGIN
+                </button>
+                <button 
+                  onClick={() => { setIsMobileMenuOpen(false); navigate('/admin/signup'); }}
+                  className="btn-brutal-yellow w-full py-3.5 text-xs font-black flex items-center justify-center gap-2"
+                >
+                  <Sparkles size={14} /> NEW TRAINER SIGNUP
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 2. Hero Section (Pushed down with pt-36 to avoid overlapping by fixed navbar) */}
       <header className="w-full max-w-6xl mx-auto px-4 pt-32 pb-12 md:pb-20 z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
