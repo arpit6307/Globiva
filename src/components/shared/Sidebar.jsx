@@ -167,30 +167,35 @@ export const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Top Header */}
-      <div className="lg:hidden w-full h-16 bg-white border-b-3 border-slate-800 px-6 flex items-center justify-between z-40 relative">
+      {/* Mobile Sticky Top Header with Hamburger Button */}
+      <div className="lg:hidden sticky top-0 w-full bg-white/95 backdrop-blur-md border-b-3 border-slate-800 px-4 sm:px-6 py-3 flex items-center justify-between z-40 shadow-sm">
         <div className="flex items-center gap-2">
           <img 
             src={logoImg} 
             alt="Globiva Logo" 
             className="h-8 w-auto object-contain border border-slate-800 rounded bg-white p-0.5" 
           />
-          <span className="font-heading font-black text-xs uppercase tracking-wider text-slate-800">GLOBIVA LEARN</span>
+          <div className="flex flex-col">
+            <span className="font-heading font-black text-xs uppercase tracking-wider text-slate-800">GLOBIVA LEARN</span>
+            <span className="text-[9px] font-mono text-brand-red font-bold uppercase">{role === 'admin' ? 'TRAINER PORTAL' : 'STUDENT PORTAL'}</span>
+          </div>
         </div>
+        
         <button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
           aria-label={isMobileOpen ? "Close mobile menu" : "Open mobile menu"}
-          className="p-2 border-2 border-slate-800 rounded-xl bg-white shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+          className="p-2 border-2 border-slate-800 rounded-xl bg-white shadow-[2px_2px_0px_#000] hover:bg-slate-100 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer flex items-center gap-1.5 font-heading font-black text-xs text-slate-800"
         >
-          {isMobileOpen ? <X size={18} /> : <Menu size={18} />}
+          {isMobileOpen ? <X size={20} className="text-brand-red" /> : <Menu size={20} className="text-slate-800" />}
+          <span className="text-[10px] uppercase hidden sm:inline">{isMobileOpen ? 'CLOSE' : 'MENU'}</span>
         </button>
       </div>
 
       {/* Mobile Drawer Overlay */}
       {isMobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 flex">
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)}></div>
-          <div className="relative w-72 h-full z-50 animate-slide-in">
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)}></div>
+          <div className="relative w-80 max-w-[85vw] h-full z-50 shadow-2xl animate-in slide-in-from-left duration-200">
             {sidebarContent(true)}
           </div>
         </div>

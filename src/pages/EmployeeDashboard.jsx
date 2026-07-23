@@ -174,7 +174,7 @@ export const EmployeeDashboard = () => {
             {activeTab === 'PENDING' ? (
               pendingAssignments.length > 0 ? (
                 pendingAssignments.map((asn) => (
-                  <div key={asn.id} class="card-brutal bg-white flex flex-col justify-between h-80 hover:-translate-y-1 hover:shadow-brutal-lg duration-200">
+                  <div key={asn.id} class="card-brutal bg-white flex flex-col justify-between min-h-[340px] hover:-translate-y-1 hover:shadow-brutal-lg duration-200">
                     <div class="flex flex-col gap-2">
                       <div class="flex justify-between items-center">
                         <span class="badge-brutal bg-brand-red-light text-brand-red border-brand-red text-[9px]">{asn.processName.toUpperCase()}</span>
@@ -213,7 +213,7 @@ export const EmployeeDashboard = () => {
                 completedAssignments.map((asn) => {
                   const passScore = asn.passedResult?.mcqScore || 100;
                   return (
-                    <div key={asn.id} class="card-brutal bg-white flex flex-col justify-between h-80 hover:-translate-y-1 hover:shadow-brutal-lg duration-200">
+                    <div key={asn.id} class="card-brutal bg-white flex flex-col justify-between min-h-[340px] hover:-translate-y-1 hover:shadow-brutal-lg duration-200">
                       <div class="flex flex-col gap-2">
                         <div class="flex justify-between items-center">
                           <span class="badge-brutal bg-brand-red-light text-brand-red border-brand-red text-[9px]">{asn.processName.toUpperCase()}</span>

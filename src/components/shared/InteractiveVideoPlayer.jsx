@@ -305,7 +305,7 @@ export const InteractiveVideoPlayer = ({ videoModule, onComplete, initialComplet
       </div>
 
       {/* 16:9 Widescreen Animated Explainer Video Screen */}
-      <div className="relative w-full aspect-video min-h-[340px] md:min-h-[460px] bg-gradient-to-br from-slate-950 via-slate-900 to-black p-4 md:p-8 flex flex-col justify-between overflow-hidden border-b-3 border-slate-800">
+      <div className="relative w-full aspect-video min-h-[280px] sm:min-h-[360px] md:min-h-[460px] bg-gradient-to-br from-slate-950 via-slate-900 to-black p-3 sm:p-6 md:p-8 flex flex-col justify-between overflow-hidden border-b-3 border-slate-800">
         
         {/* Dynamic Canvas Background Effect */}
         <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#ea283f_1px,transparent_1px)] [background-size:32px_32px]" />
@@ -316,7 +316,7 @@ export const InteractiveVideoPlayer = ({ videoModule, onComplete, initialComplet
             <span className="text-brand-red font-heading font-black text-[10px] md:text-xs uppercase tracking-widest flex items-center gap-1.5">
               <Sparkles size={12} /> {currentScene?.subtitle || `PART ${activeSceneIdx + 1}`}
             </span>
-            <h2 className="font-heading font-black text-lg md:text-2xl uppercase text-white tracking-tight">
+            <h2 className="font-heading font-black text-base sm:text-lg md:text-2xl uppercase text-white tracking-tight leading-snug">
               {currentScene?.title}
             </h2>
           </div>
@@ -345,7 +345,7 @@ export const InteractiveVideoPlayer = ({ videoModule, onComplete, initialComplet
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.98, y: -10 }}
                 transition={{ duration: 0.25 }}
-                className={`border-3 p-4 md:p-5 rounded-2xl relative shadow-[6px_6px_0px_#000] backdrop-blur-md ${
+                className={`border-3 p-3.5 sm:p-5 rounded-2xl relative shadow-[4px_4px_0px_#000] backdrop-blur-md ${
                   isSpeaker1Speaking 
                     ? 'bg-slate-900/95 border-brand-red text-white' 
                     : 'bg-slate-900/95 border-warning-yellow text-white'
@@ -353,18 +353,18 @@ export const InteractiveVideoPlayer = ({ videoModule, onComplete, initialComplet
               >
                 <div className="flex justify-between items-center mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">{currentDialogue.avatar}</span>
-                    <span className={`font-heading font-black text-xs md:text-sm uppercase tracking-wider ${
+                    <span className="text-lg sm:text-xl">{currentDialogue.avatar}</span>
+                    <span className={`font-heading font-black text-xs sm:text-sm uppercase tracking-wider ${
                       isSpeaker1Speaking ? 'text-brand-red' : 'text-warning-yellow'
                     }`}>
                       {currentDialogue.speaker} ({currentDialogue.role})
                     </span>
                   </div>
-                  <span className="font-mono text-[10px] text-slate-400 font-bold bg-slate-800 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1">
-                    <Volume2 size={12} className="text-success-green animate-pulse" /> SPEECH SYNTHESIS ({speechRate}x)
+                  <span className="font-mono text-[9px] sm:text-[10px] text-slate-400 font-bold bg-slate-800 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1">
+                    <Volume2 size={12} className="text-success-green animate-pulse" /> VOICE ({speechRate}x)
                   </span>
                 </div>
-                <p className="font-body font-bold text-xs md:text-base leading-relaxed select-text text-slate-100">
+                <p className="font-body font-bold text-xs sm:text-sm md:text-base leading-relaxed select-text text-slate-100">
                   "{currentDialogue.text}"
                 </p>
               </motion.div>
@@ -386,26 +386,26 @@ export const InteractiveVideoPlayer = ({ videoModule, onComplete, initialComplet
       </div>
 
       {/* Video Controls Footer */}
-      <div className="p-3 md:p-4 bg-slate-900 flex flex-wrap justify-between items-center gap-4 z-20">
+      <div className="p-3 sm:p-4 bg-slate-900 flex flex-col sm:flex-row justify-between items-center gap-3.5 z-20 w-full">
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
           <button 
             onClick={handlePlayPause}
-            className="bg-brand-red text-white font-heading font-black text-xs uppercase px-5 py-2.5 rounded-xl border-2 border-slate-800 shadow-[2px_2px_0px_#000] hover:bg-brand-red-dark flex items-center gap-2 cursor-pointer transition-all"
+            className="bg-brand-red text-white font-heading font-black text-xs uppercase px-4 sm:px-5 py-2.5 rounded-xl border-2 border-slate-800 shadow-[2px_2px_0px_#000] hover:bg-brand-red-dark flex items-center justify-center gap-2 cursor-pointer transition-all flex-1 sm:flex-initial"
           >
             {isPlaying ? <><Pause size={14} /> PAUSE</> : <><Play size={14} /> PLAY SLIDESHOW</>}
           </button>
 
           <button 
             onClick={handleRestart}
-            className="bg-slate-800 text-slate-200 font-heading font-bold text-xs uppercase px-3.5 py-2.5 rounded-xl border-2 border-slate-700 shadow-[2px_2px_0px_#000] hover:bg-slate-700 flex items-center gap-1.5 cursor-pointer transition-all"
+            className="bg-slate-800 text-slate-200 font-heading font-bold text-xs uppercase px-3 sm:px-3.5 py-2.5 rounded-xl border-2 border-slate-700 shadow-[2px_2px_0px_#000] hover:bg-slate-700 flex items-center justify-center gap-1.5 cursor-pointer transition-all"
           >
-            <RotateCcw size={14} /> RESTART SLIDESHOW
+            <RotateCcw size={14} /> RESTART
           </button>
         </div>
 
         {/* Locked Next Scene Button */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
           <button 
             disabled={activeSceneIdx === 0}
             onClick={handlePrevScene}
@@ -414,21 +414,21 @@ export const InteractiveVideoPlayer = ({ videoModule, onComplete, initialComplet
             <ChevronLeft size={16} />
           </button>
 
-          <span className="font-mono text-xs font-bold text-slate-400">
+          <span className="font-mono text-[10px] sm:text-xs font-bold text-slate-400">
             SCENE {activeSceneIdx + 1} / {totalScenes}
           </span>
 
           {sceneFinished || isCompleted ? (
             <button 
               onClick={handleNextScene}
-              className="bg-success-green text-white font-heading font-black text-xs uppercase px-5 py-2.5 rounded-xl border-2 border-slate-800 shadow-[2px_2px_0px_#000] hover:bg-green-700 flex items-center gap-1.5 cursor-pointer transition-all"
+              className="bg-success-green text-white font-heading font-black text-xs uppercase px-4 sm:px-5 py-2.5 rounded-xl border-2 border-slate-800 shadow-[2px_2px_0px_#000] hover:bg-green-700 flex items-center gap-1.5 cursor-pointer transition-all"
             >
               {activeSceneIdx === totalScenes - 1 ? 'FINISH & UNLOCK EXAM' : 'NEXT SCENE'} <ChevronRight size={14} />
             </button>
           ) : (
             <button 
               disabled
-              className="bg-slate-800 text-slate-500 font-heading font-black text-xs uppercase px-5 py-2.5 rounded-xl border-2 border-slate-700 shadow-[2px_2px_0px_#000] cursor-not-allowed flex items-center gap-2 opacity-80"
+              className="bg-slate-800 text-slate-500 font-heading font-black text-xs uppercase px-4 sm:px-5 py-2.5 rounded-xl border-2 border-slate-700 shadow-[2px_2px_0px_#000] cursor-not-allowed flex items-center gap-2 opacity-80"
             >
               <Lock size={12} /> PLAYING SCENE...
             </button>
