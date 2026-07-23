@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { useAuth } from '../context/AuthContext';
 import { Sidebar } from '../components/shared/Sidebar';
 import { BackgroundParticles } from '../components/shared/BackgroundParticles';
 import { seedDefaultCourse } from '../utils/seedData';
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 
 export const Courses = () => {
+  const { currentUser } = useAuth();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
