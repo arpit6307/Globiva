@@ -134,12 +134,6 @@ export const Landing = () => {
           {/* Desktop Login Button */}
           <div className="hidden md:flex items-center gap-3">
             <button 
-              onClick={() => navigate('/admin/login')}
-              className="btn-brutal-secondary py-2 px-3 shadow-brutal-sm text-xs font-black flex items-center gap-1.5"
-            >
-              <Briefcase size={14} /> TRAINER LOGIN
-            </button>
-            <button 
               onClick={() => navigate('/employee/login')}
               className="btn-brutal-primary py-2 px-4 shadow-brutal-sm text-xs font-black flex items-center gap-1.5"
             >
