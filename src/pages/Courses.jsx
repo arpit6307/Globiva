@@ -751,53 +751,65 @@ export const Courses = () => {
                 <p class="font-heading font-bold text-sm uppercase animate-pulse text-slate-800">Syncing course materials...</p>
               </div>
             ) : (
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {courses.map((course) => (
-                  <div key={course.id} class="border-3 border-slate-800 shadow-[6px_6px_0px_#000] rounded-2xl p-6 bg-white relative transition-all duration-200 flex flex-col justify-between h-80 hover:-translate-y-1 hover:shadow-[8px_8px_0px_#000]">
-                    <div class="flex flex-col gap-2">
-                      <div class="flex justify-between items-start">
-                        <span class="border-2 border-slate-800 rounded-full px-3.5 py-1.5 text-[10px] font-black font-heading uppercase tracking-wider inline-flex items-center gap-1 select-none shadow-[2px_2px_0px_#000] bg-brand-red-light text-brand-red">
+                  <div 
+                    key={course.id} 
+                    className="border-3 border-slate-800 shadow-[6px_6px_0px_#000] rounded-2xl p-6 bg-white relative transition-all duration-200 flex flex-col justify-between min-h-[340px] hover:-translate-y-1 hover:shadow-[8px_8px_0px_#000]"
+                  >
+                    <div className="flex flex-col gap-3">
+                      {/* Card Header Badges */}
+                      <div className="flex flex-wrap justify-between items-center gap-2">
+                        <span className="border-2 border-slate-800 rounded-full px-3 py-1 text-[10px] font-black font-heading uppercase tracking-wider inline-flex items-center gap-1 select-none shadow-[2px_2px_0px_#000] bg-brand-red-light text-brand-red max-w-[200px] truncate">
                           {course.processName.toUpperCase()}
                         </span>
-                        <span class={`border-2 border-slate-800 rounded-full px-3.5 py-1.5 text-[10px] font-black font-heading uppercase tracking-wider inline-flex items-center gap-1 select-none shadow-[2px_2px_0px_#000] ${course.isActive ? 'bg-green-100 text-success-green' : 'bg-red-100 text-error-red'}`}>
-                          {course.isActive ? 'Active' : 'Archived'}
+                        <span className="border-2 border-slate-800 rounded-full px-3 py-1 text-[10px] font-black font-heading uppercase tracking-wider inline-flex items-center gap-1 select-none shadow-[2px_2px_0px_#000] bg-green-100 text-success-green">
+                          ACTIVE
                         </span>
                       </div>
-                      <h3 class="font-heading font-black text-xl uppercase mt-2 line-clamp-2 leading-tight text-slate-800">{course.title}</h3>
+
+                      {/* Title */}
+                      <h3 className="font-heading font-black text-xl uppercase leading-snug text-slate-800 line-clamp-2">
+                        {course.title}
+                      </h3>
+
+                      {/* PDF Source Badge if present */}
                       {course.sourcePdfName && (
-                        <span className="font-mono text-[10px] font-bold text-brand-red bg-red-50 border border-brand-red/30 px-2 py-0.5 rounded-md inline-flex items-center gap-1 w-fit">
-                          <FileText size={10} /> PDF Sourced: {course.sourcePdfName}
+                        <span className="font-mono text-[10px] font-bold text-brand-red bg-red-50 border border-brand-red/30 px-2.5 py-1 rounded-lg inline-flex items-center gap-1.5 w-fit shadow-sm">
+                          <FileText size={12} /> PDF Sourced: {course.sourcePdfName}
                         </span>
                       )}
-                      <p class="font-body text-xs text-gray-500 line-clamp-3 leading-relaxed mt-1">{course.description}</p>
+
+                      {/* Description */}
+                      <p className="font-body text-xs text-slate-500 font-bold line-clamp-3 leading-relaxed">
+                        {course.description}
+                      </p>
                     </div>
 
-                    <div class="border-t-2 border-slate-800 pt-4 mt-4 flex justify-between items-center bg-gray-50 -mx-6 -mb-6 p-4 rounded-b-2xl border-dashed">
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-400 font-heading font-bold uppercase">Evaluations</span>
-                        <span class="font-heading font-black text-xs text-slate-800">{course.sections?.length || 0} Levels | {course.mcqs?.length || 0} MCQs</span>
+                    {/* Bottom Action Footer */}
+                    <div className="border-t-2 border-slate-800 pt-4 mt-6 flex flex-wrap justify-between items-center bg-slate-50 -mx-6 -mb-6 p-4 rounded-b-2xl border-dashed gap-3">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-slate-400 font-heading font-bold uppercase tracking-wider">Evaluations</span>
+                        <span className="font-heading font-black text-xs text-slate-800">
+                          {course.sections?.length || 0} Levels &bull; {course.mcqs?.length || 0} MCQs
+                        </span>
                       </div>
-                      <div class="flex gap-2">
+
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleStartEditCourse(course)}
-                          class="border-3 border-slate-800 shadow-[2px_2px_0px_#000] rounded-lg p-2 text-xs bg-warning-yellow hover:bg-warning-yellow-dark text-slate-800 font-heading font-bold transition-all duration-200 hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer"
+                          className="bg-warning-yellow hover:bg-amber-400 text-slate-900 border-2 border-slate-800 shadow-[2px_2px_0px_#000] px-3.5 py-2 text-xs font-heading font-black tracking-wider uppercase inline-flex items-center gap-1.5 rounded-xl cursor-pointer transition-all hover:-translate-y-0.5 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                           title="Edit Course Content & MCQs"
                         >
-                          EDIT
+                          <Edit3 size={14} /> EDIT
                         </button>
-                        <button
-                          onClick={() => handleToggleCourseActive(course)}
-                          class={`border-3 border-slate-800 shadow-[2px_2px_0px_#000] rounded-lg p-2 text-xs text-slate-800 font-heading font-bold transition-all duration-200 hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer ${!course.isActive ? 'bg-green-50 hover:bg-green-100' : 'bg-amber-50 hover:bg-amber-100'}`}
-                          title={course.isActive ? 'Archive Course' : 'Activate Course'}
-                        >
-                          {course.isActive ? 'ARCHIVE' : 'ACTIVATE'}
-                        </button>
+                        
                         <button
                           onClick={() => handleDeleteCourse(course)}
-                          className="border-3 border-slate-800 shadow-[2px_2px_0px_#000] rounded-lg p-2 text-xs bg-red-500 hover:bg-red-600 text-white font-heading font-bold transition-all duration-200 hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center gap-1 cursor-pointer"
+                          className="bg-red-500 hover:bg-red-600 text-white border-2 border-slate-800 shadow-[2px_2px_0px_#000] px-3.5 py-2 text-xs font-heading font-black tracking-wider uppercase inline-flex items-center gap-1.5 rounded-xl cursor-pointer transition-all hover:-translate-y-0.5 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                           title="Permanently Delete Course & PDF Data"
                         >
-                          <Trash2 size={12} /> DELETE
+                          <Trash2 size={14} /> DELETE
                         </button>
                       </div>
                     </div>
