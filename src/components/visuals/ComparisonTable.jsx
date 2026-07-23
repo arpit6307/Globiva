@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { Columns } from 'lucide-react';
 
 export const ComparisonTable = ({ visualData }) => {
-  const { headers = ["Parameter", "Standard Protocol", "Key Value"], rows = [] } = visualData || {};
+  const { headers = ["Parameter", "Standard Protocol", "Key Value"], rows = [], tableRows = [] } = visualData || {};
+  const displayRows = tableRows.length > 0 ? tableRows : rows;
 
   return (
     <div className="w-full flex flex-col gap-4 p-4 md:p-6 bg-slate-900/90 text-white rounded-2xl border-2 border-slate-700 backdrop-blur-md overflow-x-auto">
@@ -22,21 +23,24 @@ export const ComparisonTable = ({ visualData }) => {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, rIdx) => (
-            <motion.tr
-              key={rIdx}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: rIdx * 0.1 }}
-              className="border-b border-slate-800/80 hover:bg-slate-800/40"
-            >
-              {row.map((cell, cIdx) => (
-                <td key={cIdx} className="p-2.5 font-body font-bold text-xs md:text-sm text-slate-200">
-                  {cell}
-                </td>
-              ))}
-            </motion.tr>
-          ))}
+          {displayRows.map((row, rIdx) => {
+            const cells = Array.isArray(row) ? row : (typeof row === 'object' ? Object.values(row) : [row]);
+            return (
+              <motion.tr
+                key={rIdx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: rIdx * 0.1 }}
+                className="border-b border-slate-800/80 hover:bg-slate-800/40"
+              >
+                {cells.map((cell, cIdx) => (
+                  <td key={cIdx} className="p-2.5 font-body font-bold text-xs md:text-sm text-slate-200">
+                    {String(cell)}
+                  </td>
+                ))}
+              </motion.tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

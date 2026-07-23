@@ -274,7 +274,7 @@ export const generateCourseFromPdf = (rawText, fileName = 'Uploaded_Document.pdf
     } else if (visualType === "comparison-table") {
       visualData = {
         headers: ["Document Concept", "Primary Directive", "Compliance Scope"],
-        rows: [[termObj.term, mainSentence, secondarySentence]]
+        tableRows: [{ concept: termObj.term, directive: mainSentence, scope: secondarySentence }]
       };
     } else if (visualType === "timeline") {
       visualData = {
@@ -452,7 +452,7 @@ export const generateCourseFromPdf = (rawText, fileName = 'Uploaded_Document.pdf
     ? sentencesPool.slice(0, 2).join(' ') 
     : `Auto-generated training course created directly from uploaded PDF document (${fileName}).`;
 
-  return {
+  const rawCourseData = {
     title,
     processName,
     description: courseDescription,
@@ -467,4 +467,32 @@ export const generateCourseFromPdf = (rawText, fileName = 'Uploaded_Document.pdf
     mcqs,
     videoModule
   };
+
+  return sanitizeForFirestore(rawCourseData);
+};
+
+/**
+ * Recursively sanitizes data objects to ensure compatibility with Firebase Firestore.
+ * Converts nested arrays into arrays of objects to prevent Firestore `Nested arrays are not supported` errors.
+ */
+export const sanitizeForFirestore = (data) => {
+  if (Array.isArray(data)) {
+    return data.map(item => {
+      if (Array.isArray(item)) {
+        const convertedObj = {};
+        item.forEach((val, idx) => {
+          convertedObj[`col_${idx + 1}`] = val;
+        });
+        return sanitizeForFirestore(convertedObj);
+      }
+      return sanitizeForFirestore(item);
+    });
+  } else if (data !== null && typeof data === 'object') {
+    const cleanObj = {};
+    for (const [key, value] of Object.entries(data)) {
+      cleanObj[key] = sanitizeForFirestore(value);
+    }
+    return cleanObj;
+  }
+  return data;
 };

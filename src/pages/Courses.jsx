@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { Sidebar } from '../components/shared/Sidebar';
 import { BackgroundParticles } from '../components/shared/BackgroundParticles';
 import { seedDefaultCourse } from '../utils/seedData';
-import { extractTextFromPdf } from '../utils/pdfParser';
+import { extractTextFromPdf, sanitizeForFirestore } from '../utils/pdfParser';
 import { generateCourseFromLlm } from '../services/llmClient';
 import { ProgressTracker } from '../components/shared/ProgressTracker';
 import { 
@@ -53,16 +53,16 @@ export const Courses = () => {
       const generatedCourse = await generateCourseFromLlm(extractedText, pdfFile.name);
 
       const newCourseId = `course-pdf-${Date.now()}`;
-      const courseDoc = {
+      const sanitizedDoc = sanitizeForFirestore({
         ...generatedCourse,
         id: newCourseId,
         isActive: true,
         createdBy: currentUser?.uid || 'admin',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
-      };
+      });
 
-      await setDoc(doc(db, 'courses', newCourseId), courseDoc);
+      await setDoc(doc(db, 'courses', newCourseId), sanitizedDoc);
 
       setSuccess(`🎉 Successfully generated "${generatedCourse.title}" course with 10 animated visual scenes & 20 MCQs!`);
       setIsPdfModalOpen(false);
