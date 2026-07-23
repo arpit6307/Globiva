@@ -4,6 +4,8 @@ import { db } from '../firebase/config';
 import { Sidebar } from '../components/shared/Sidebar';
 import { BackgroundParticles } from '../components/shared/BackgroundParticles';
 import { seedDefaultCourse } from '../utils/seedData';
+import { extractTextFromPdf } from '../utils/pdfParser';
+import { generateCourseFromLlm } from '../services/llmClient';
 import { ProgressTracker } from '../components/shared/ProgressTracker';
 import { 
   BookOpen, 
@@ -42,28 +44,30 @@ export const Courses = () => {
     setSuccess('');
     
     try {
-      setPdfProgressText('Uploading PDF to generation server...');
-      const formData = new FormData();
-      formData.append('pdf', pdfFile);
+      setPdfProgressText('Extracting PDF text directly in browser...');
+      const extractedText = await extractTextFromPdf(pdfFile);
 
-      const response = await fetch('http://localhost:3001/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
+      setPdfProgressText('Analyzing content & generating 10 visual scenes + 20 MCQs...');
+      const generatedCourse = await generateCourseFromLlm(extractedText, pdfFile.name);
 
-      if (!response.ok) {
-        throw new Error('Failed to upload PDF');
-      }
+      const newCourseId = `course-pdf-${Date.now()}`;
+      const courseDoc = {
+        ...generatedCourse,
+        id: newCourseId,
+        isActive: true,
+        createdBy: currentUser?.uid || 'admin',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
 
-      const data = await response.json();
-      if (data.success && data.jobId) {
-        setGenerationJobId(data.jobId);
-        setIsPdfModalOpen(false);
-      } else {
-        throw new Error(data.error || 'Upload failed');
-      }
+      await setDoc(doc(db, 'courses', newCourseId), courseDoc);
+
+      setSuccess(`🎉 Successfully generated "${generatedCourse.title}" course with 10 animated visual scenes & 20 MCQs!`);
+      setIsPdfModalOpen(false);
+      setPdfFile(null);
+      fetchCourses();
     } catch (err) {
-      console.error("PDF upload error:", err);
+      console.error("PDF parsing and course generation error:", err);
       setError(err.message || 'Failed to parse and generate course from PDF.');
     } finally {
       setParsingPdf(false);

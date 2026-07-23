@@ -21,10 +21,14 @@ export const extractTextFromPdf = async (pdfFile) => {
       const pageStrings = textContent.items.map(item => item.str);
       fullText += pageStrings.join(' ') + '\n';
     }
-    return fullText.trim();
+    const trimmedText = fullText.trim();
+    if (!trimmedText || trimmedText.length < 10) {
+      throw new Error("This PDF has no readable text. Please upload a text-based PDF.");
+    }
+    return trimmedText;
   } catch (error) {
     console.error("Error reading PDF text with pdfjs-dist:", error);
-    throw new Error("Could not parse text from PDF file. Please ensure it is a valid text-based PDF.");
+    throw new Error(error.message || "Could not parse text from PDF file. Please ensure it is a valid text-based PDF.");
   }
 };
 
@@ -57,7 +61,8 @@ const CHARACTER_PAIRS = [
 /**
  * Background AI Analyzer & PDF Course Generator
  * Converts 100% PDF extracted text into:
- * - 10 Contextual Animated Video Scenes with Dynamic Characters tailored to PDF motive
+ * - 10 Contextual Animated Video Scenes with Dynamic Visual Templates (HeadingIntro, BulletList, ComparisonTable, Timeline, QuoteHighlight, DiagramPlaceholder)
+ * - Synced Audio Narration Engine Data
  * - 2 Fun Interactive Mini-Games based on PDF content
  * - 20 Comprehensive MCQs derived strictly from PDF text
  * 
@@ -116,7 +121,7 @@ export const generateCourseFromPdf = (rawText, fileName = 'Uploaded_Document.pdf
 
   const sentencesPool = cleanedSentences.length >= 10 ? cleanedSentences : lines.filter(l => l.length > 15);
 
-  // Extract key terms directly from PDF text (NO HARDCODED BPO/SOP FALLBACKS)
+  // Extract key terms directly from PDF text
   const keyTermMatches = [];
   lines.forEach(line => {
     if (line.includes(':') || line.includes('-') || line.includes('–')) {
@@ -162,12 +167,25 @@ export const generateCourseFromPdf = (rawText, fileName = 'Uploaded_Document.pdf
     });
   }
 
-  // ---------------------------------------------------------------------
-  // GENERATE MINIMUM 10 VIDEO SCENES DERIVED 100% FROM PDF MOTIVE & TEXT
-  // ---------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------------
+  // GENERATE 10 ANIMATED SLIDE SCENES WITH VISUAL TYPES (HeadingIntro, BulletList, Timeline, etc.)
+  // ----------------------------------------------------------------------------------------------
   const videoScenes = [];
   const totalScenesToMake = 10;
   const sentencesPerScene = Math.max(1, Math.floor(sentencesPool.length / totalScenesToMake));
+
+  const visualTypesList = [
+    "heading-intro",
+    "bullet-list",
+    "quote-highlight",
+    "timeline",
+    "comparison-table",
+    "diagram-placeholder",
+    "bullet-list",
+    "quote-highlight",
+    "timeline",
+    "heading-intro"
+  ];
 
   for (let scIdx = 0; scIdx < totalScenesToMake; scIdx++) {
     const sceneNum = scIdx + 1;
@@ -176,16 +194,58 @@ export const generateCourseFromPdf = (rawText, fileName = 'Uploaded_Document.pdf
     const mainSentence = sceneSentences[0] || sentencesPool[scIdx % sentencesPool.length] || `Understanding key concepts defined in ${title}.`;
     const secondarySentence = sceneSentences[1] || sentencesPool[(scIdx + 1) % sentencesPool.length] || `Adhering to the official document instructions.`;
     const termObj = finalKeyTerms[scIdx % finalKeyTerms.length];
+    const visualType = visualTypesList[scIdx % visualTypesList.length];
 
     let sceneTitle = `Scene ${sceneNum}: ${termObj.term}`;
     if (sceneNum === 1) sceneTitle = `Scene 1: Introduction & Motive of ${title}`;
     if (sceneNum === 10) sceneTitle = `Scene 10: Document Summary & Assessment Readiness`;
+
+    let visualData = {};
+    if (visualType === "heading-intro") {
+      visualData = {
+        heading: sceneNum === 1 ? title : `Chapter Summary: ${termObj.term}`,
+        subheading: mainSentence,
+        highlights: [title, `Section ${sceneNum}`, domainRoleHost]
+      };
+    } else if (visualType === "bullet-list") {
+      visualData = {
+        heading: `Key Directives: ${termObj.term}`,
+        points: [mainSentence, secondarySentence, `Mandatory Compliance Clause: ${termObj.definition.substring(0, 120)}`]
+      };
+    } else if (visualType === "comparison-table") {
+      visualData = {
+        headers: ["Document Concept", "Primary Directive", "Compliance Scope"],
+        rows: [[termObj.term, mainSentence, secondarySentence]]
+      };
+    } else if (visualType === "timeline") {
+      visualData = {
+        heading: `Operational Sequence for ${termObj.term}`,
+        steps: [
+          { title: "Verification Phase", description: mainSentence },
+          { title: "Execution Protocol", description: secondarySentence }
+        ]
+      };
+    } else if (visualType === "quote-highlight") {
+      visualData = {
+        quote: mainSentence,
+        author: title,
+        highlightKey: termObj.term
+      };
+    } else if (visualType === "diagram-placeholder") {
+      visualData = {
+        title: `Architecture Flow: ${termObj.term}`,
+        nodes: ["PDF Document", termObj.term, "Execution Phase", "Audit Clearance"]
+      };
+    }
 
     videoScenes.push({
       sceneId: `scene-${sceneNum}`,
       title: sceneTitle,
       subtitle: `PDF Document Breakdown Part ${sceneNum} of 10`,
       visualTheme: sceneNum === 1 ? "intro" : (sceneNum === 10 ? "summary" : "deep_dive"),
+      visualType,
+      visualData,
+      narration: `Scene ${sceneNum}. ${termObj.term}. The document explicitly outlines: ${mainSentence}. Furthermore: ${secondarySentence}`,
       keyHighlights: [termObj.term, `${title}`, `Section ${sceneNum}`],
       dialogues: [
         {
