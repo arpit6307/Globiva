@@ -4,7 +4,7 @@ import { db } from '../firebase/config';
 import { Sidebar } from '../components/shared/Sidebar';
 import { BackgroundParticles } from '../components/shared/BackgroundParticles';
 import { seedDefaultCourse } from '../utils/seedData';
-import { extractTextFromPdf, generateCourseFromPdf } from '../utils/pdfParser';
+import { ProgressTracker } from '../components/shared/ProgressTracker';
 import { 
   BookOpen, 
   Plus, 
@@ -31,6 +31,7 @@ export const Courses = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const [parsingPdf, setParsingPdf] = useState(false);
   const [pdfProgressText, setPdfProgressText] = useState('');
+  const [generationJobId, setGenerationJobId] = useState(null);
 
   const handleProcessPdfUpload = async (e) => {
     e.preventDefault();
@@ -41,26 +42,26 @@ export const Courses = () => {
     setSuccess('');
     
     try {
-      setPdfProgressText('Reading PDF Document...');
-      const rawText = await extractTextFromPdf(pdfFile);
+      setPdfProgressText('Uploading PDF to generation server...');
+      const formData = new FormData();
+      formData.append('pdf', pdfFile);
 
-      setPdfProgressText('Analyzing text & extracting topics...');
-      await new Promise(r => setTimeout(r, 600));
-
-      setPdfProgressText('Generating Game Levels, MCQs & Video Module...');
-      const courseData = generateCourseFromPdf(rawText, pdfFile.name);
-
-      setPdfProgressText('Saving course to database...');
-      const newCourseId = `course-pdf-${Date.now()}`;
-      await setDoc(doc(db, 'courses', newCourseId), {
-        id: newCourseId,
-        ...courseData
+      const response = await fetch('http://localhost:3001/api/upload', {
+        method: 'POST',
+        body: formData,
       });
 
-      setSuccess(`🎉 Course "${courseData.title}" auto-created from PDF with Game Levels, MCQs, and Interactive Video Module!`);
-      setIsPdfModalOpen(false);
-      setPdfFile(null);
-      fetchCourses();
+      if (!response.ok) {
+        throw new Error('Failed to upload PDF');
+      }
+
+      const data = await response.json();
+      if (data.success && data.jobId) {
+        setGenerationJobId(data.jobId);
+        setIsPdfModalOpen(false);
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
     } catch (err) {
       console.error("PDF upload error:", err);
       setError(err.message || 'Failed to parse and generate course from PDF.');
@@ -68,6 +69,135 @@ export const Courses = () => {
       setParsingPdf(false);
       setPdfProgressText('');
     }
+  };
+
+  const handleGenerationComplete = async (result) => {
+    setGenerationJobId(null);
+    try {
+      const newCourseId = `course-pdf-${Date.now()}`;
+      
+      // Get characters from backend or use defaults
+      const char1 = result.characters?.speaker1 || { name: 'Instructor', role: 'Subject Expert', avatar: '👩‍💼', voiceGender: 'female' };
+      const char2 = result.characters?.speaker2 || { name: 'Student', role: 'Learner', avatar: '👨‍💼', voiceGender: 'male' };
+
+      // Convert backend scenes (sceneText format) into InteractiveVideoPlayer dialogues
+      const videoScenes = (result.scenes || []).map((scene, idx) => {
+        // Split scene narration text into dialogue turns between two characters
+        const sentences = (scene.sceneText || '').split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 10);
+        const dialogues = sentences.map((sentence, sIdx) => {
+          const isChar1 = sIdx % 2 === 0;
+          return {
+            speaker: isChar1 ? char1.name : char2.name,
+            role: isChar1 ? char1.role : char2.role,
+            avatar: isChar1 ? '👩‍💼' : '👨‍💼',
+            voiceGender: isChar1 ? (char1.voiceGender || 'female') : (char2.voiceGender || 'male'),
+            text: sentence.trim()
+          };
+        });
+
+        // If no dialogues extracted, create at least one from the full scene text
+        if (dialogues.length === 0 && scene.sceneText) {
+          dialogues.push({
+            speaker: char1.name,
+            role: char1.role,
+            avatar: '👩‍💼',
+            voiceGender: char1.voiceGender || 'female',
+            text: scene.sceneText
+          });
+        }
+
+        return {
+          sceneId: scene.sceneId || `scene-${idx + 1}`,
+          title: `Scene ${idx + 1}: ${scene.visualCue || 'Content'}`,
+          subtitle: `Part ${idx + 1} of ${result.scenes.length}`,
+          visualTheme: idx === 0 ? 'intro' : (idx === result.scenes.length - 1 ? 'summary' : 'deep_dive'),
+          keyHighlights: scene.keyHighlights || [],
+          dialogues
+        };
+      });
+
+      const videoModule = {
+        title: result.outline?.title ? `${result.outline.title} - AI Animated Video` : 'AI Animated Video Module',
+        description: 'Auto-generated animated video module from PDF document.',
+        totalDurationSeconds: (result.scenes || []).reduce((sum, s) => sum + (s.durationHint || 15), 0),
+        scenes: videoScenes.length > 0 ? videoScenes : [{
+          sceneId: 'scene-1',
+          title: 'Course Introduction',
+          subtitle: 'Welcome',
+          visualTheme: 'intro',
+          keyHighlights: [result.outline?.title || 'Course Content'],
+          dialogues: [{
+            speaker: char1.name, role: char1.role, avatar: '👩‍💼', voiceGender: 'female',
+            text: `Welcome to this course on ${result.outline?.title || 'the uploaded document'}. Let's explore the key concepts together.`
+          }]
+        }]
+      };
+
+      const mappedMcqs = (result.mcqs || []).map((q, idx) => ({
+        id: `q-${Date.now()}-${idx}`,
+        question: q.question,
+        options: q.options,
+        correctIndex: q.correctAnswerIndex !== undefined ? q.correctAnswerIndex : (q.correctIndex !== undefined ? q.correctIndex : 0),
+        explanation: q.explanation || ''
+      }));
+
+      // Build 2 mini-game sections from outline chapters
+      const allChapters = result.outline?.chapters || [];
+      const mappedSections = allChapters.slice(0, 2).map((chapter, idx) => ({
+        id: `sec-${Date.now()}-${idx}`,
+        title: idx === 0 
+          ? `Game 1: Flashcard Challenge — ${chapter.chapterTitle || 'Key Concepts'}` 
+          : `Game 2: Speed Match — ${chapter.chapterTitle || 'Core Terms'}`,
+        gameType: idx % 2 === 0 ? 'flashcards' : 'match',
+        content: chapter.summary || chapter.chapterTitle || '',
+        keyTerms: (chapter.keyPoints || []).slice(0, 6).map((kp, kIdx) => ({
+          term: kp.length > 40 ? kp.substring(0, 40) : kp,
+          definition: kp
+        }))
+      }));
+
+      // Get description from outline
+      const outlineSummary = allChapters.length > 0 
+        ? allChapters.map(ch => ch.summary || ch.chapterTitle).join(' ').substring(0, 300)
+        : 'Auto-generated training course from uploaded PDF document.';
+
+      const courseData = {
+        id: newCourseId,
+        title: result.outline?.title || 'PDF Auto Course',
+        processName: processName || 'PDF Course',
+        description: outlineSummary,
+        passPercentage: 75,
+        pointsPerQuestion: 10,
+        passingScore: Math.floor((mappedMcqs.length || 20) * 10 * 0.75),
+        mcqTimeLimitMinutes: 15,
+        maxAttempts: 2,
+        isActive: true,
+        createdBy: 'trainer_pdf_upload',
+        sourcePdfName: 'Uploaded PDF',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        sections: mappedSections.length >= 2 ? mappedSections : [
+          { id: `sec-${Date.now()}-0`, title: 'Game 1: Flashcard Challenge', gameType: 'flashcards', content: outlineSummary, keyTerms: [{ term: 'Key Concept', definition: 'Important topic from the document.' }] },
+          { id: `sec-${Date.now()}-1`, title: 'Game 2: Speed Match Duel', gameType: 'match', content: outlineSummary, keyTerms: [{ term: 'Core Term', definition: 'Fundamental concept from the training material.' }] }
+        ],
+        videoModule,
+        mcqs: mappedMcqs.length > 0 ? mappedMcqs : [{ id: 'q-1', question: 'Demo question?', options: ['A', 'B', 'C', 'D'], correctIndex: 0, explanation: 'Placeholder' }],
+        videoUrl: result.videoUrl || null
+      };
+
+      await setDoc(doc(db, 'courses', newCourseId), courseData);
+      setSuccess(`🎉 Course "${courseData.title}" auto-created with ${mappedMcqs.length} MCQs, ${videoScenes.length} video scenes, and 2 mini-games!`);
+      setPdfFile(null);
+      fetchCourses();
+    } catch (err) {
+      console.error("Error saving generated course:", err);
+      setError("Failed to save generated course.");
+    }
+  };
+
+  const handleGenerationError = (errMsg) => {
+    setGenerationJobId(null);
+    setError(errMsg);
   };
 
   // Course Wizard state
@@ -325,6 +455,14 @@ export const Courses = () => {
     <div class="min-h-screen main-content-layout flex flex-col relative">
       <Sidebar />
       <BackgroundParticles />
+      {generationJobId && (
+        <ProgressTracker 
+          jobId={generationJobId} 
+          onComplete={handleGenerationComplete} 
+          onError={handleGenerationError} 
+          onClose={() => setGenerationJobId(null)}
+        />
+      )}
       
       <main class="flex-1 p-6 md:p-8 flex flex-col gap-6 max-w-7xl w-full mx-auto relative z-10">
         {isWizardOpen ? (

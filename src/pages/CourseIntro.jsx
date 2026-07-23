@@ -194,48 +194,59 @@ export const CourseIntro = () => {
             )}
           </div>
           
-          <InteractiveVideoPlayer 
-            videoUrl={course.videoUrl || "https://www.youtube.com/watch?v=cNOKQIw81SE"}
-            videoModule={course.videoModule || {
-              title: `${course?.title || 'Process Guideline'} - AI Animated Video`,
-              description: "PDF-based character animated video module.",
-              totalDurationSeconds: 120,
-              scenes: [
-                {
-                  sceneId: "scene-1",
-                  title: "Welcome & Document Orientation",
-                  subtitle: `Orientation: ${course?.processName || 'Standard Guidelines'}`,
-                  visualTheme: "intro",
-                  keyHighlights: [course?.title || "Process Guidelines", "Mandatory Training"],
-                  dialogues: [
-                    {
-                      speaker: "Trainer Sarah",
-                      role: "Lead Quality Trainer",
-                      avatar: "👩‍💼",
-                      voiceGender: "female",
-                      text: `Welcome! Today we are reviewing the official process document "${course?.title || 'Guidelines'}". Are you ready?`
-                    },
-                    {
-                      speaker: "Agent Alex",
-                      role: "Operations Associate",
-                      avatar: "👨‍💼",
-                      voiceGender: "male",
-                      text: `Hi Sarah! Yes, I'm ready to learn the key guidelines.`
-                    },
-                    {
-                      speaker: "Trainer Sarah",
-                      role: "Lead Quality Trainer",
-                      avatar: "👩‍💼",
-                      voiceGender: "female",
-                      text: course?.description || `The primary objective is to maintain strict operational quality and follow standard compliance protocols.`
-                    }
-                  ]
-                }
-              ]
-            }} 
-            onComplete={handleVideoComplete}
-            initialCompleted={isVideoCompleted}
-          />
+          {course.videoUrl ? (
+            <div className="w-full aspect-video border-3 border-slate-800 shadow-[6px_6px_0px_#000] rounded-2xl overflow-hidden bg-slate-900 relative">
+              <video 
+                src={course.videoUrl} 
+                controls 
+                onEnded={handleVideoComplete}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <InteractiveVideoPlayer 
+              videoUrl={course.videoUrl || "https://www.youtube.com/watch?v=cNOKQIw81SE"}
+              videoModule={course.videoModule || {
+                title: `${course?.title || 'Process Guideline'} - AI Animated Video`,
+                description: "PDF-based character animated video module.",
+                totalDurationSeconds: 120,
+                scenes: [
+                  {
+                    sceneId: "scene-1",
+                    title: "Welcome & Document Orientation",
+                    subtitle: `Orientation: ${course?.processName || 'Standard Guidelines'}`,
+                    visualTheme: "intro",
+                    keyHighlights: [course?.title || "Process Guidelines", "Mandatory Training"],
+                    dialogues: [
+                      {
+                        speaker: "Trainer Sarah",
+                        role: "Lead Quality Trainer",
+                        avatar: "👩‍💼",
+                        voiceGender: "female",
+                        text: `Welcome! Today we are reviewing the official process document "${course?.title || 'Guidelines'}". Are you ready?`
+                      },
+                      {
+                        speaker: "Agent Alex",
+                        role: "Operations Associate",
+                        avatar: "👨‍💼",
+                        voiceGender: "male",
+                        text: `Hi Sarah! Yes, I'm ready to learn the key guidelines.`
+                      },
+                      {
+                        speaker: "Trainer Sarah",
+                        role: "Lead Quality Trainer",
+                        avatar: "👩‍💼",
+                        voiceGender: "female",
+                        text: course?.description || `The primary objective is to maintain strict operational quality and follow standard compliance protocols.`
+                      }
+                    ]
+                  }
+                ]
+              }} 
+              onComplete={handleVideoComplete}
+              initialCompleted={isVideoCompleted}
+            />
+          )}
         </div>
 
         {/* Course Statistics Dashboard Grid */}
